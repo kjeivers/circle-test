@@ -39,7 +39,11 @@ jobs:
               name: "Helm install"
               command: |
                 echo "Helm installed"
-
+      - unless:
+          condition: true
+          steps:
+          - run:
+              command: circleci step skip
 filter-default: &filter-default
   filters:
     branches:

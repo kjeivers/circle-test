@@ -6,6 +6,7 @@ jobs:
     parameters:
       service:
         type: string
+        default: "[not set]"
     docker:
       - image: circleci/golang:1.10.0
     steps:
@@ -23,7 +24,7 @@ jobs:
           command: |
             echo "Helm --dry-run"
 
-  deploy:
+  install:
     docker:
       - image: circleci/golang:1.10.0
     steps:
@@ -63,7 +64,7 @@ workflows:
           <<: *filter-default
           requires:
             - plan-common-terraform
-      - deploy:
+      - install:
           name: deploy-common-terraform
           service: "common-terraform"
           <<: *filter-default
@@ -94,19 +95,19 @@ workflows:
             - plan-service-a
             - plan-service-b
             - plan-service-c
-      - deploy:
+      - install:
           name: deploy-service-a
           service: "service-a"
           <<: *filter-default
           requires:
             - approve-services-terraform
-      - deploy:
+      - install:
           name: deploy-service-b
           service: "service-b"
           <<: *filter-default
           requires:
             - approve-services-terraform
-      - deploy:
+      - install:
           name: deploy-service-c
           service: "service-c"
           <<: *filter-default

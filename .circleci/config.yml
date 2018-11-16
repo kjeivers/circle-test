@@ -57,7 +57,7 @@ workflows:
     jobs:
       - plan:
           name: plan-common-terraform
-          service: "common-terraform"
+#          service: "common-terraform"
           <<: *filter-default
       - approve-common-terraform:
           type: approval
@@ -66,25 +66,25 @@ workflows:
             - plan-common-terraform
       - install:
           name: deploy-common-terraform
-          service: "common-terraform"
+#          service: "common-terraform"
           <<: *filter-default
           requires:
             - approve-common-terraform
       - plan:
           name: plan-service-a
-          service: "service-a"
+#          service: "service-a"
           <<: *filter-default
           requires:
             - deploy-common-terraform
       - plan:
           name: plan-service-b
-          service: "service-b"
+#          service: "service-b"
           <<: *filter-default
           requires:
             - deploy-common-terraform
       - plan:
           name: plan-service-c
-          service: "service-c"
+#          service: "service-c"
           <<: *filter-default
           requires:
             - deploy-common-terraform
@@ -97,19 +97,19 @@ workflows:
             - plan-service-c
       - install:
           name: deploy-service-a
-          service: "service-a"
+#          service: "service-a"
           <<: *filter-default
           requires:
             - approve-services-terraform
       - install:
           name: deploy-service-b
-          service: "service-b"
+#          service: "service-b"
           <<: *filter-default
           requires:
             - approve-services-terraform
       - install:
           name: deploy-service-c
-          service: "service-c"
+#          service: "service-c"
           <<: *filter-default
           requires:
             - approve-services-terraform

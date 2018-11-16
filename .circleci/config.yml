@@ -1,0 +1,114 @@
+version: 2.1
+
+jobs:
+
+  plan:
+    parameters:
+      service:
+        type: string
+    docker:
+      - image: circleci/golang:1.10.0
+    steps:
+      - checkout
+      - run:
+          name: "Terraform init"
+          command: |
+            echo "Terraform init'ed"
+      - run:
+          name: "Terraform plan"
+          command: |
+            echo "Terraform planned"
+      - run:
+          name: "Helm plan"
+          command: |
+            echo "Helm --dry-run"
+
+  deploy:
+    docker:
+      - image: circleci/golang:1.10.0
+    steps:
+      - run:
+          name: "Terraform apply"
+          command: |
+            echo "Terraform applied"
+      - run:
+          name: "Helm install"
+          command: |
+            echo "Helm installed"
+
+filter-default: &filter-default
+  filters:
+    branches:
+      only: master
+
+filter-release-tag: &filter-release-tag
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /v?[0-9]+(\.[0-9]+)*/
+
+
+workflows:
+  version: 2
+
+  deploy-to-prod:
+    jobs:
+      - plan:
+          name: plan-common-terraform
+          service: "common-terraform"
+          <<: *filter-default
+      - approve-common-terraform:
+          type: approval
+          <<: *filter-default
+          requires:
+            - plan-common-terraform
+      - deploy:
+          name: deploy-common-terraform
+          service: "common-terraform"
+          <<: *filter-default
+          requires:
+            - approve-common-terraform
+      - plan:
+          name: plan-service-a
+          service: "service-a"
+          <<: *filter-default
+          requires:
+            - deploy-common-terraform
+      - plan:
+          name: plan-service-b
+          service: "service-b"
+          <<: *filter-default
+          requires:
+            - deploy-common-terraform
+      - plan:
+          name: plan-service-c
+          service: "service-c"
+          <<: *filter-default
+          requires:
+            - deploy-common-terraform
+      - approve-services-terraform:
+          type: approval
+          <<: *filter-default
+          requires:
+            - plan-service-a
+            - plan-service-b
+            - plan-service-c
+      - deploy:
+          name: deploy-service-a
+          service: "service-a"
+          <<: *filter-default
+          requires:
+            - approve-services-terraform
+      - deploy:
+          name: deploy-service-b
+          service: "service-b"
+          <<: *filter-default
+          requires:
+            - approve-services-terraform
+      - deploy:
+          name: deploy-service-c
+          service: "service-c"
+          <<: *filter-default
+          requires:
+            - approve-services-terraform

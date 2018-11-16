@@ -29,7 +29,7 @@ jobs:
       - image: circleci/golang:1.10.0
     steps:
       - run:
-        command: circleci step skip
+        command: circleci step halt
       - when:
           condition: false
           steps:

@@ -28,14 +28,17 @@ jobs:
     docker:
       - image: circleci/golang:1.10.0
     steps:
-      - run:
-          name: "Terraform apply"
-          command: |
-            echo "Terraform applied"
-      - run:
-          name: "Helm install"
-          command: |
-            echo "Helm installed"
+      - when:
+          condition: false
+          steps:
+          - run:
+              name: "Terraform apply"
+              command: |
+                echo "Terraform applied"
+          - run:
+              name: "Helm install"
+              command: |
+                echo "Helm installed"
 
 filter-default: &filter-default
   filters:

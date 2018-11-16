@@ -10,6 +10,11 @@ jobs:
     docker:
       - image: circleci/golang:1.10.0
     steps:
+      - when:
+          condition: false
+          steps:
+          - run:
+              command: circleci step halt
       - checkout
       - run:
           name: "Terraform init"
@@ -29,7 +34,7 @@ jobs:
       - image: circleci/golang:1.10.0
     steps:
       - run:
-        command: circleci step halt
+          command: circleci step halt
       - when:
           condition: false
           steps:
